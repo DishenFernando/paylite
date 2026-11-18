@@ -1,0 +1,29 @@
+name: Test PayLite (disposable PostgreSQL)
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+    env:
+      POSTGRES_DB: paylite_ci
+      POSTGRES_USER: paylite_ci
+      POSTGRES_PASSWORD: ephemeral_ci_password_not_for_deployment
+      SEED_DEMO: "true"
+      APP_PORT: "8000"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Start isolated database and app
+        run: docker compose -f compose.yaml up -d --build db app
+      - name: End-to-end tests
+        run: docker compose -f compose.yaml --profile test run --build --rm tests
+      - name: Logs on failure
+        if: failure()
+        run: docker compose -f compose.yaml logs --tail=150 db app
+      - name: Remove disposable test database
+        if: always()
+        run: docker compose -f compose.yaml down -v --remove-orphans

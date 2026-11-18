@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {"label": "PayLite: Start Docker stack", "type": "shell", "command": "docker compose up --build -d", "problemMatcher": []},
+    {"label": "PayLite: Logs", "type": "shell", "command": "docker compose logs -f app", "problemMatcher": []},
+    {"label": "PayLite: Run integration tests", "type": "shell", "command": "docker compose --profile test run --build --rm tests", "problemMatcher": []},
+    {"label": "PayLite: Stop stack", "type": "shell", "command": "docker compose down", "problemMatcher": []}
+  ]
+}
